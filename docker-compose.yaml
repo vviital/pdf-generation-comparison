@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  static-images:
+    container_name: nginx
+    image: static-images
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+
+  pdf-generation:
+    container_name: pdf-generation
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      IMAGE_SERVICE_BASE_URL: http://static-images:8080
+      INSTANCE_SIZE: small
+      INSTANCES_CONCURRENCY: 10
+      MAX_CONCURRENT_REQUESTS: 100
