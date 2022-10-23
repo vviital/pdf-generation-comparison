@@ -16,8 +16,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - ./results:/src/app/results
     environment:
       IMAGE_SERVICE_BASE_URL: http://static-images:8080
       INSTANCE_SIZE: small
-      INSTANCES_CONCURRENCY: 10
-      MAX_CONCURRENT_REQUESTS: 100
+      INSTANCES_CONCURRENCY: 20
+      MAX_CONCURRENT_REQUESTS: 200
+      ITERATIONS: 20

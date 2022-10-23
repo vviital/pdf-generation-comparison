@@ -109,13 +109,7 @@ export class ChromeEngine extends BaseEngine<InstanceDTO> {
     page.on('pageerror', (error) => console.error('Page error occurred:', error));
     page.on('console', (msg) => {
       if (_.result(msg, 'type') === 'error') {
-        console.error(
-          'Browser console error',
-          JSON.stringify({
-            text: msg.text(),
-            location: msg.location(),
-          }),
-        );
+        console.error('Browser console error', JSON.stringify({text: msg.text(), location: msg.location()}));
       }
     });
 

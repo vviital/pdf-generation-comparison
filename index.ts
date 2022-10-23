@@ -8,35 +8,34 @@ import {BaseEngine} from './src/base-engine';
 
 const instanceSize: Sizes = (process.env.INSTANCE_SIZE as Sizes) || 'small';
 const concurrency: number = +(process.env.INSTANCES_CONCURRENCY || 1);
+const iterations: number = +(process.env.ITERATIONS || 10);
+const maxConcurrentRequests: number = +(process.env.MAX_CONCURRENT_REQUESTS || 100);
+const engine: string = process.env.ENGINE === 'chrome' ? 'chrome' : 'pdfmake';
 
-console.log('Config: ', JSON.stringify({instanceSize, concurrency}));
+const config = {engine, iterations, instanceSize, concurrency, maxConcurrentRequests};
+
+console.log('Config: ', JSON.stringify(config));
 
 const instances = _.times(concurrency, () => createInstance(instanceSize));
 
 async function main() {
-  const chromeMetrics = new Metrics();
-  const pdfmakeMetrics = new Metrics();
-  const chromeEngine = new ChromeEngine(chromeMetrics);
-  const pdfMakeEngine = new PDFMakeEngine(pdfmakeMetrics);
-
-  await testRunner(instances, pdfMakeEngine);
-  await testRunner(instances, chromeEngine);
-
-  console.log('--- chrome stats:', JSON.stringify(chromeMetrics.stats(), null, ' '));
-  console.log('--- pdfmake stats:', JSON.stringify(pdfmakeMetrics.stats(), null, ' '));
+  const metrics = new Metrics();
+  const generator = engine === 'chrome' ? new ChromeEngine(metrics) : new PDFMakeEngine(metrics);
+  await testRunner(instances, generator, metrics);
 }
 
-async function testRunner(instances: InstanceDTO[], engine: BaseEngine<InstanceDTO>) {
+async function testRunner(instances: InstanceDTO[], engine: BaseEngine<InstanceDTO>, metrics: Metrics) {
   console.log('--- instances: ', _.size(instances));
 
   await engine.init();
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < iterations; i++) {
     console.time(`--- iteration: ${i + 1}`);
     await Promise.all(_.map(instances, async (instance) => engine.createPdf(instance)));
     console.timeEnd(`--- iteration: ${i + 1}`);
   }
 
+  await metrics.print(config);
   await engine.close();
 }
 
