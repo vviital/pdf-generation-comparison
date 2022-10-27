@@ -1,5 +1,6 @@
 import PdfPrinter from 'pdfmake';
 import * as _ from 'lodash';
+import {faker} from '@faker-js/faker';
 import axios, {AxiosRequestConfig} from 'axios';
 import {setTimeout} from 'timers/promises';
 import {InstanceDTO} from './data';
@@ -76,7 +77,8 @@ export class Requester {
   async request(url: string, config: AxiosRequestConfig): Promise<any> {
     if (this.counter < maxConcurrentRequests) {
       this.counter++;
-      return axios.get(url, config).finally(() => this.counter--);
+      const params = new URLSearchParams({rnd: faker.datatype.uuid()});
+      return axios.get(url, {...config, params}).finally(() => this.counter--);
     }
 
     await setTimeout(_.random(10, 50), '');

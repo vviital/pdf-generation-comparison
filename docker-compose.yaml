@@ -20,7 +20,10 @@ services:
       - ./results:/src/app/results
     environment:
       IMAGE_SERVICE_BASE_URL: http://static-images:8080
-      INSTANCE_SIZE: small
-      INSTANCES_CONCURRENCY: 20
-      MAX_CONCURRENT_REQUESTS: 200
+      INSTANCE_SIZE: ${INSTANCE_SIZE:-small}
+      INSTANCES_CONCURRENCY: ${INSTANCES_CONCURRENCY:-1}
+      MAX_CONCURRENT_REQUESTS: ${MAX_CONCURRENT_REQUESTS:-150}
+      ENGINE: ${ENGINE:-chrome}
       ITERATIONS: 20
+    depends_on:
+      - static-images

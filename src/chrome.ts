@@ -1,12 +1,13 @@
 import puppeteer from 'puppeteer';
 import * as _ from 'lodash';
+import {faker} from '@faker-js/faker';
 import {InstanceDTO} from './data';
 import {BaseEngine} from './base-engine';
 import {setTimeout} from 'timers/promises';
 
 const template = (instance: InstanceDTO): string => {
   const images = _.map(instance.images, (image) => {
-    return `<div><img src="${image}" style="width: 200px; height: 200px; margin: 20px"></div>`;
+    return `<div><img src="${image}?rnd=${faker.datatype.uuid()}" style="width: 200px; height: 200px; margin: 20px"></div>`;
   });
   const content = _.map(instance.content, (item) => {
     return `<div>${item}</div>`;
