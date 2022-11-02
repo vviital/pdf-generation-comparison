@@ -10,8 +10,6 @@ print('medium', medium);
 print('large', large);
 
 function print(prefix, set) {
-  console.log('--- --- --- --- --- --- ---');
-
   let recordSet = `Concurrency, ${generateLabel('chrome pdf generation')}, ${generateLabel(
     'pdfmake pdf generation',
   )}, ${generateLabel('pdfmake image download')}, ${generateLabel('pdfmake pdf creation')}\n`;
@@ -25,15 +23,15 @@ function print(prefix, set) {
     )},${handleRecord(pdfmake?.['pdf-creation'])}\n`;
   }
 
-  fs.writeFileSync(`./${prefix}.csv`, recordSet);
-
-  console.log(recordSet);
+  fs.writeFileSync(`./measurements/${prefix}.csv`, recordSet);
 }
 
 function generateLabel(string) {
-  return `Min ${string}, Avg ${string}, Max ${string}`;
+  return `Avg ${string}`;
+  // return `Min ${string}, Avg ${string}, Max ${string}`;
 }
 
 function handleRecord(record = {}) {
-  return `${record.min},${record.avg},${record.max}`;
+  return `${record.avg}`;
+  // return `${record.min},${record.avg},${record.max}`;
 }
